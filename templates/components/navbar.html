@@ -1,0 +1,78 @@
+<nav class="navbar navbar-expand-md navbar-dark bg-dark">
+  <div class="container-fluid px-3">
+    <a class="navbar-brand ms-2" href="/"><img src="/media/stock_images/logo_white.svg" alt="" width="50" height="50"></a>
+    <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      
+      {% if user.is_staff or user.is_superuser %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/dashboard/' %}active{% endif %}" aria-current="page" href="{% url 'db-index' %}">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/user/' %}active{% endif %}" href="{% url 'db-user' %}">Users</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/product/' %}active{% endif %}" href="{% url 'db-product' %}">Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/order/' %}active{% endif %}" href="{% url 'db-order' %}">Orders</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/db-category/' %}active{% endif %}" href="{% url 'db-category' %}">Category</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/sales/' %}active{% endif %}" href="{% url 'db-sales' %}">Sales</a>
+        </li>
+      </ul>
+      {% else %}
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="{% url 'db-index' %}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/products/' %}active{% endif %}" aria-current="page" href="{% url 'db-customer_products' %}">Products</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.path == '/about/' %}active{% endif %}" aria-current="page" href="{% url 'db-about' %}">About Us</a>
+        </li>
+      </ul>
+      {% endif %}
+
+      <ul class="navbar-nav mb-2 mb-lg-0 gap-1">
+        {% if not user.is_authenticated and user.is_staff or user.is_superuser %}
+        
+        {% else %}
+          <li class="nav-item d-flex flex-row align-items-center">
+          <a class="text-decoration-none text-success nav-link {% if request.path == '/cart/' %}active{% endif %}" href="{% url 'cart' %}"><img src="/media/stock_images/cart.svg" alt=""><sup class="badge" style="background-color: #818963;">{{ cart_count }}</sup></a>
+          </li>
+        {% endif %}
+      {% if user.is_authenticated %}
+        <li class="nav-item d-flex flex-row">
+          <a href="{% url 'user-profile' %}" class="nav-link">{{ user.username }}</a>
+        </li>
+        <li class="nav-item">
+          <hr class="d-block d-md-none">
+          <form action="{% url 'user-logout' %}" method="POST">
+            {% csrf_token %}
+            <button class="nav-link btn btn-light text-dark rounded-pill px-3 me-4 ms-2" type ="submit">Logout</button>
+          </form>
+        </li>
+      </ul>
+
+      {% else %}
+      <ul class="navbar-nav me-0 me-lg-5">
+        <li class="nav-item">
+          <a href="{% url 'user-register' %}" class="nav-link">Register</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn btn-light text-dark rounded-pill px-3 me-4 ms-2" href="{% url 'user-login' %}">Login</a>
+        </li>
+      </ul>
+      {% endif %}
+      
+    </div>
+  </div>
+</nav>

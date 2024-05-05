@@ -1,0 +1,38 @@
+{% extends '../components/master.html' %}
+
+{% block title %}
+Sales
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5">
+
+    <div class="container">
+        <h1 class="my-3">Sales</h1>
+        <div class="border border-secondary p-2">
+            <table id="example" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Customer</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sale in sales %}
+                    <tr>
+                        <td>{{ sale.id }}</td>
+                        <td>{{ sale.user }}</td>
+                        <td>{{ sale.date }}</td>
+                        <td>
+                            <a class="btn btn-secondary" href="details/{{ sale.id }}">View</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends '../components/master.html' %}
+{% load custom_tags %}
+{% load crispy_forms_tags %}
+
+{% block title %} Checkout {% endblock %}
+{% block content %}
+<div class="container py-5">
+    <div class="col my-4 mt-5">
+        <h2>Step 1 - Review Your Cart Items</h2>
+        <div class="accordion" id="accordionExample">
+            {% for item in cart_items %}
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="heading{{ item.index }}">
+                    <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ item.index }}" aria-expanded="false" aria-controls="collapse{{ item.index }}">
+                        <span class="me-3">{{ item.item.product.name }}</span>
+                        ( <span class="badge bg-success"> {{ item.item.quantity }} </span> )
+                    </button>
+                </h2>
+                <div id="collapse{{ item.index }}" class="accordion-collapse collapse" aria-labelledby="heading{{ item.index }}" data-bs-parent="#accordionExample"> 
+                    <div class="accordion-body">
+                        <div class="row">
+                            <div class="col-9">
+                                <img src="/media/{{ item.item.product.image }}" alt="" width="150">
+                            </div>
+                            <div class="col-3">
+                                <h6>Unit Price: <span>P{{ item.item.product.price|to_float }}</span></h6>
+                                <h6>Quantity: <span>{{ item.item.quantity }}</span></h6>
+                                <hr>
+                                <h6>Subtotal: <span>P{{ item.subtotal|to_float }}</span></h6>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            <div class="container text-end mt-3">
+                <hr>
+                <hr>
+                <h5>Total: <span>P{{ total|to_float }}</span></h5>
+            </div>
+        </div>
+    </div>
+
+    <div class="col my-4 pt-4 pb-5">
+        <h2>Step 2 - Payment:</h2>
+        <div class="container d-flex align-items-center">
+            <span>Click here to pay: </span>{{ paypal.render }}
+        </div>
+    </div>
+</div>
+{% endblock %}

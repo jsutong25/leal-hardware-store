@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "chartjs-adapter-date-fns": "^3.0.0",
+    "chartjs-plugin-datalabels": "^2.2.0",
+    "datatables.net-dt": "^2.0.5",
+    "jquery": "^3.7.1"
+  }
+}

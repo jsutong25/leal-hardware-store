@@ -1,0 +1,56 @@
+{% extends '../components/master.html' %}
+
+{% block title %}
+{{ category.name }}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5 mt-3 overflow-hidden">
+
+    {% include '../components/category_list.html' %}
+
+    {% if messages %}
+    <ul class="messages list-unstyled mt-3">
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <li class="alert alert-success">{{ message }}</li>
+        {% elif message.tags == 'error' %}
+        <li class="alert alert-danger">{{ message }}</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="container">
+        <input autocomplete="off" type="text" id="search-input" class="form-control py-3 rounded-pill"
+            placeholder="Search products or categories..." />
+    </div>
+
+    
+
+    <div class="container" id="product-list">
+
+        {% include 'dashboard/product_list_partial.html' %}
+
+    </div>
+</div>
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<script>
+    document.getElementById('search-input').addEventListener('input', function () {
+        let query = this.value;
+
+        fetch(`/search/?q=${query}`)  // Make an AJAX request to the search endpoint
+            .then(response => response.json())
+            .then(data => {
+                // Replace the product list with the returned HTML
+                document.getElementById('product-list').innerHTML = data.product_list_html;
+            });
+    });
+</script>
+{% endblock %}

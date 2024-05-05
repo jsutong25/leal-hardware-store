@@ -1,0 +1,20 @@
+{% extends '../components/master.html' %}
+
+{% block title %}
+Customer Details
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5 mb-3">
+    <a class="mt-4 pt-2 ms-4 text-decoration-none" href="/user">< Back</a>
+
+    <div class="container pb-5 mt-5">
+        <h1 class="my-3">{{ user.first_name }} {{ user.last_name }}</h1>
+        <div class="border-bottom border-secondary mb-3"></div>
+
+        <h4>Username: {{ user.username }}</h4>
+        <h4>Email: {{ user.email }}</h4>
+        <h4>Role: {% if user.is_staff %}<span>Staff</span>{% elif user.is_superuser %}<span>Admin</span>{% elif user.is_superuser and user.is_superuser %}<span>Admin</span>{% else %}<span>Customer</span>{% endif %}</h4>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,19 @@
+{% load custom_tags %}
+
+<section class="category">
+    <div class="container">
+        <p class="fw-bold">Categories:</p>
+        <div class="row d-flex flex-nowrap overflow-auto">
+            {% get_categories as categories %}
+            {% for cat in categories %}
+            <div class="col-auto text-center">
+                <a class="category-link text-decoration-none link-secondary" href="{% url 'category_detail' cat.id %}">
+                    <img src="/media/{{ cat.image }}" alt="{{ cat.name }}" width="50" height="50">
+                    <p>{{ cat.name }}</p>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        <hr>
+    </div>
+</section>

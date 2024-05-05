@@ -1,0 +1,116 @@
+{% load crispy_forms_tags %}
+{% load custom_tags %}
+
+<div class="container-fluid pb-5 mt-3 overflow-hidden">
+    {% if messages %}
+    <ul class="messages list-unstyled">
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <li class="alert alert-success">{{ message }}</li>
+        {% elif message.tags == 'error' %}
+        <li class="alert alert-danger">{{ message }}</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <!-- Product Categories -->
+    {% include '../components/category_list.html' %}
+    <!-- End Product Categories -->
+
+    <!-- Hero Section -->
+    <section id="hero" class="d-flex align-items-center mt-2 bg-dark text-light">
+        <div class="container py-5">
+            <div class="row">
+                <div class="col-5 d-flex align-items-center">
+                    <div class="flex-column">
+                        <h1 class="display-2 fw-bold">Leal Hardware Store</h1>
+                        <p class="mb-4 fs-3 fst-italic">"Tools for the Trade, Solutions for Life!"</p>
+                    </div>
+                </div>
+                <div class="col-2">
+                    <div class="">
+                        <img src="/media/images/herohouse.png" class="" width="1000">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Hero -->
+
+    <!-- Featured Product -->
+    <section>
+        <div class="container mt-5 mb-5 pb-0 pb-lg-5">
+            <h1>Featured Products</h1>
+            <div class="row">
+                {% for p in product|slice:":3" %}
+                <div class="card mx-auto col-xl-3 col-lg-4 col-md-5 col-10 mt-3">
+                    <!-- Adjust column width for responsiveness -->
+                    <img class='mx-auto img-thumbnail' src="/media/{{ p.image }}" width="auto" height="auto" />
+                    <div class="card-body text-center mx-auto">
+                        <div class=''>
+                            <h5 class="font-weight-bold">{{ p.name }}</h5>
+                            <span>P</span><span class="current-product-price-{{ p.id }}">{{ p.price }}</span>
+                            <div class="d-flex align-items-center gap-2 mt-3">
+                                <a href="{% url 'category_product_detail' p.id %}" class="btn btn-outline-warning">View Details</a>
+
+                                <input class="product-pid-{{ p.id }}" type="hidden" value="{{ p.pid }}">
+                                <input class="product-quantity-{{ p.id }}" id="product-quantity" type="hidden" value="1">
+                                <input class="product-image-{{ p.id }}" type="hidden" value="/media/{{ p.image }}">
+                                <input class="product-id-{{ p.id }}" type="hidden" value="{{ p.id }}">
+                                <input class="product-name-{{ p.id }}" type="hidden" value="{{ p.name }}">
+
+                                <a href="{% url 'add_to_cart' p.id %}?return_url={{ request.path }}" class="btn btn-success"><img class="img-fluid" src="/media/stock_images/cart.svg" alt=""> Add to Cart</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <!-- End Featured Product -->
+
+    <!-- Why Choose Us Section -->
+    <section class="mt-2">
+        <div class="container overflow-hidden">
+            <div class="row justify-content-between">
+                <div class="col-12 col-lg-5">
+                    <div class="">
+                        <h3 class="fs-1">Why Choose Us?</h3>
+                        <p>At Leal Hardware Store, we are dedicated to providing our customers with the best shopping experience possible. With a vast selection of high-quality hardware items, our goal is to ensure you have everything you need for your home improvement, repair, and building projects.</p>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-12 col-lg-auto">
+                            <div class="d-flex align-items-center">
+                                <img class="img-fluid" src="/media/stock_images/bag.svg" alt="">
+                                <h4>Cheaper</h4>
+                            </div>
+                            <p>One of the primary reasons our customers choose Leal Hardware Store is our commitment to offering competitive pricing. We understand that cost is a crucial factor when choosing a hardware supplier, which is why we strive to keep our prices lower than our competitors.</p>
+                        </div>
+                        <div class="col-12 col-lg-auto">
+                            <div class="d-flex align-items-center">
+                                <img class="img-fluid" src="/media/stock_images/support.svg" alt="">
+                                <h4>Quality</h4>
+                            </div>
+                            <p>Quality is at the heart of everything we do at Leal Hardware Store. We carefully select products from trusted brands known for their durability and performance, ensuring that every item we sell meets our high standards.</p>
+                        </div>
+                        <div class="col-12 col-lg-auto">
+                            <div class="d-flex align-items-center">
+                                <img class="img-fluid" src="/media/stock_images/return.svg" alt="">
+                                <h4>21-days Warranty</h4>
+                            </div>
+                            <p>We believe in the quality of our products and want you to feel confident in your purchases. That's why Leal Hardware Store offers a 21-day warranty on all items. If you experience any issues with your purchase within this timeframe, simply return the item to us, and we'll either replace it or refund your money—no questions asked.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12 offset-md-2 offset-lg-0 col-lg-6">
+                    <img class="d-none d-lg-block rounded-3 img-fluid" src="/media/stock_images/img-grid-1.jpg" alt="" width="500" >
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Why Choose Us Section -->
+</div>

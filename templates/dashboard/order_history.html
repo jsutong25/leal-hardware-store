@@ -1,0 +1,43 @@
+{% extends '../components/master.html' %}
+
+{% block title %}
+Order History
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid pb-5">
+    <a class="mt-4 pt-2 ms-4 text-decoration-none" href="/order">< Back</a>
+    <div class="container">
+        <h1 class="my-3">Order History</h1>
+            <div class="border border-secondary p-2">
+                <div class="table-responsive">
+                    <table id="example" class="table table-striped" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>Ordered by</th>
+                                <th>Product</th>
+                                <th>Quantity</th>
+                                <th>Date Ordered</th>
+                                <th>Date Accepted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for order in order_history %}
+                            <tr>
+                                <td>{{ order.staff }}</td>
+                                <td>{{ order.product }}</td>
+                                <td>{{ order.order_qty }}</td>
+                                <td>{{ order.date_requested }}</td>
+                                <td>{{ order.date_accepted }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

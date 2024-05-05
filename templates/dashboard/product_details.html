@@ -1,0 +1,26 @@
+{% extends '../components/master.html' %}
+
+{% block title %}
+Product
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5 mb-3 overflow-hidden">
+    <a class="mt-4 pt-2 ms-4 text-decoration-none" href="/product">< Back</a>
+
+    <div class="container">
+        <div class="row">
+            <div class="col text-center">
+                <h1 class="mt-3">{{ products.name }}</h1>
+                <img class="mx-auto" src="/media/{{ products.image }}" alt="{{ products.name }}" width="500">
+            </div>
+
+            <div class="col align-content-center ">
+                <h5><strong>Category:</strong> {{ products.category }}</h5>
+                <h5 class="text-break"><strong>Quantity:</strong> {{ products.quantity }}</h5>
+                <h5 class="text-break"><strong>Price:</strong> P{{ products.price }}</h5>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

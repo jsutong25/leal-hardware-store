@@ -1,0 +1,35 @@
+{% if query and query|length > 0 %}
+{% if products and products|length > 0 %}
+<h3 class="mt-3">Search results:</h3>
+{% else %}
+<h3 class="mt-3">Search results:</h3>
+<h3 class="lead">Product or category not found</h3>
+
+{% endif %}
+{% endif %}
+
+<div class="row justify-content-center" style="row-gap: 10px; column-gap: 20px;">
+    
+    {% for p in products %}
+    <div class="col-lg-3 col-md-6 col-12 mt-5"> <!-- Use responsive columns -->
+        <div class="card">
+            <a class="mx-auto" href="{% url 'category_product_detail' p.id %}"><img class='mx-auto img-thumbnail' src="/media/{{ p.image }}" width="200" height="200" /></a>
+            <div class="card-body text-center mx-auto">
+                <div class="col">
+                    <h5 class="font-weight-bold">{{ p.name }}</h5>
+                    <p class="fst-italic">{{ p.category }}</p>
+                    <span>P</span><span class="current-product-price-{{ p.id }}">{{ p.price }}</span>
+                </div>
+                <div class="col mt-auto">
+                    <div class="d-flex align-items-center justify-content-center gap-2 mt-3">
+                        <a href="{% url 'category_product_detail' p.id %}" class="btn btn-outline-warning">View
+                            Details</a>
+                        <a href="{% url 'add_to_cart' p.id %}?return_url={{ request.path }}" class="btn btn-success">Add
+                            to Cart</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>

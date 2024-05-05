@@ -1,0 +1,49 @@
+{% extends '../components/master.html' %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5 mt-3 overflow-hidden">
+
+    <!-- Product Category -->
+    {% include '../components/category_list.html' %}
+    <!-- End Product Category -->
+
+    {% if messages %}
+    <ul class="messages list-unstyled mt-3">
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <li class="alert alert-success">{{ message }}</li>
+            {% elif message.tags == 'error' %}
+                <li class="alert alert-danger">{{ message }}</li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+    
+    <div class="container py-5">
+        <div class="row">
+            <div class="col offset-2">
+                <img class="" src="/media/{{ p.image }}" alt="{{ p.name }}" width="300" height="300">
+            </div>
+
+            <div class="col d-flex flex-column text-center">
+                <h1 class="" style="color: #818963;">{{ p.name }}</h1>
+                <h4 class="lead">{{ p.category }}</h4>
+                <span class="product-price fw-bold fs-2 mt-4">P{{ p.price }}</span>
+                <input class="product-quantity" id="product-quantity" type="hidden" value="1">
+                <input class="product-image" type="hidden" value="/media/{{ p.image }}">
+                <input class="product-id" type="hidden" value="{{ p.id }}">
+                <input class="product-name" type="hidden" value="{{ p.name }}">
+
+                <div class="my-2">
+                    <label for="product-quantity">Quantity:</label>
+                    <input class="product-quantity w-25" id="product-quantity" type="number" value="1"><br>
+                </div>
+                <a href="{% url 'add_to_cart' p.id %}?return_url={{ request.path }}" class="btn btn-success mt-3"><img src="/media/stock_images/cart.svg" alt=""> Add to Cart</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

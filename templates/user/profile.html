@@ -1,0 +1,39 @@
+{% extends '../components/master.html' %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid pb-5 mt-5">
+    <div class="container">
+        <div class="text-center border-5 border-bottom">
+            <h2>Profile Details</h2>
+        </div>
+        <div class="container py-3 d-flex justify-content-center">
+            <div class="row">
+                <div class="col">
+                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                    <p><strong>Phone:</strong> {{ user.profile.phone }}</p>
+                    <p><strong>Address:</strong> {{ user.profile.address }}</p>
+                </div>
+                <div class="col">
+                    <img class="border border-2 border-dark" src="{{ user.profile.image.url }}" alt="" width=200>
+                </div>
+            </div>
+        </div>
+        <div class="text-center mt-3">
+            <a class="btn btn-primary" href="{% url 'user-profile-edit' %}">Edit Profile</a>
+        </div>
+    </div>
+
+    <!-- <p>Name: {{ user.username }}</p>
+    <p>Email: {{ user.email }}</p>
+    <p>Phone: {{ user.profile.phone }}</p>
+    <p>Address: {{ user.profile.address }}</p>
+    <img src="{{ user.profile.image.url }}" alt=""> -->
+</div>
+{% endblock %}

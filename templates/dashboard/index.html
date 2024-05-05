@@ -1,0 +1,314 @@
+{% extends '../components/master.html' %}
+
+{% block title %}
+Dashboard
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% if user.is_authenticated and user.is_staff and user.is_superuser %}
+<div class="container-fluid pb-5 mt-3 overflow-hidden">
+    {% if messages %}
+    <ul class="messages list-unstyled">
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <li class="alert alert-success">{{ message }}</li>
+        {% elif message.tags == 'error' %}
+        <li class="alert alert-danger">{{ message }}</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+    <div class="container">
+        <h1>Welcome, {{ user.first_name }}</h1>
+        <div class="container border border-3 p-3 mt-5">
+            <h3>Reports</h3>
+            <hr>
+            <div class="row">
+                <div class="col-12 col-md-6">
+                    <div class="card-header text-center fw-bold">
+                        <span>Number of Orders (Today & Yesterday)</span>
+                        <canvas id="daily-count-chart"></canvas>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mt-2">
+                    <div class="card-header text-center fw-bold">
+                        <span>Total Revenue (Today & Yesterday)</span>
+                        <canvas id="daily-sales-chart"></canvas>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mt-2">
+                    <div class="card-header text-center fw-bold">
+                        <span>Number of Users (Staff & Customers)</span>
+                        <canvas id="user-chart"></canvas>
+                    </div>
+                </div>
+                <div class="col-12 col-md-6 mt-2">
+                    <div class="card-header text-center fw-bold">
+                        <span>Number of Users with Carts (Active & Inactive)</span>
+                        <canvas id="cart-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-12 col-lg-6 mb-5 mb-lg-0">
+                <div class="border border-secondary p-2">
+                    <h5>Add new product</h5>
+                    <form action="{% url 'db-index' %}" class="d-flex flex-column" enctype="multipart/form-data"
+                        method="POST">
+                        {% csrf_token %}
+                        {{ product_form|crispy }}
+
+                        <button class="btn btn-success" name="product_submit" type="submit">Submit</button>
+
+                    </form>
+                </div>
+            </div>
+            <div class="col-12 col-lg-6">
+                <div class="border border-secondary p-2">
+                    <h5>Add new order</h5>
+                    <form action="{% url 'db-index' %}" class="d-flex flex-column" enctype="multipart/form-data"
+                        method="POST">
+                        {% csrf_token %}
+                        {{ order_form|crispy }}
+                        <button class="btn btn-success" type="submit" name="order_submit">Submit</button>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+
+{% include 'dashboard/customer_index.html' %}
+
+{% endif %}
+
+<script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+
+<!-- Orders -->
+<script>
+    try {
+
+        const dailyOrderData = JSON.parse('{{ daily_order_count_json|escapejs }}');
+        const dailyLabels = dailyOrderData.map(item => item.day);  // X-axis labels
+        const dailyCounts = dailyOrderData.map(item => item.order_count);  // Y-axis data
+
+        // Initialize the bar chart
+        const dailyOrderChart = new Chart(document.getElementById("daily-count-chart"), {
+            type: 'bar',  // Setting the chart type to 'bar'
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    label: 'Number of Orders',  // Label for the dataset
+                    data: dailyCounts,  // Data for the bars
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',  // Bar color with transparency
+                    borderColor: 'rgb(75, 192, 192)',  // Border color
+                    borderWidth: 1,
+                    datalabels: {
+                        align: 'end',  // Align the label at the end of the bar
+                        anchor: 'end',  // Anchor the label at the top
+                    },
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        color: 'black',  // Label color
+                        font: {
+                            weight: 'bold',  // Make the label text bold
+                        },
+                        formatter: (value) => {
+                            return value;  // Display the raw value
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        type: 'time',  // Time-based X-axis
+                        time: {
+                            unit: 'day',  // Display by day
+                        },
+                    },
+                    y: {
+                        min: 0,  // Minimum Y-axis value
+                        ticks: {
+                            stepSize: 10,  // Step size for Y-axis ticks
+                        },
+                    },
+                },
+            },
+        });
+    } catch (error) {
+        console.error("Error parsing daily sales data:", error);
+    }
+</script>
+
+<!-- Revenue -->
+<script>
+    try {
+        console.log("Daily Sales JSON:", '{{ daily_sales_json|escapejs }}');
+        // Convert daily_sales_json into JSON
+        const dailyRevenueData = JSON.parse('{{ daily_sales_json|escapejs }}');
+
+        // Convert strings to numbers for the chart
+        const dailyLabels = dailyRevenueData.map(item => item.day);  // Extract days
+        const dailyTotals = dailyRevenueData.map(item => parseFloat(item.total_sales));  // Convert to numbers
+
+        console.log("Daily Labels:", dailyLabels);  // Log labels to verify they are correct
+        console.log("Daily Totals:", dailyTotals);  // Ensure the data is parsed as numbers
+
+        // Create a bar chart to display daily revenue
+        const dailyRevenueChart = new Chart(document.getElementById("daily-sales-chart"), {
+            type: 'bar',  // Set chart type to 'bar'
+            data: {
+                labels: dailyLabels,  // X-axis labels (dates)
+                datasets: [{
+                    label: 'Daily Revenue',  // Dataset label
+                    data: dailyTotals,  // Y-axis data (total revenue)
+                    backgroundColor: 'rgba(142, 66, 235, 0.5)',  // Bar color with transparency
+                    borderColor: 'rgb(138, 43, 226)',  // Bar border color
+                    borderWidth: 1,
+                    datalabels: {
+                        align: 'end',  // Align labels at the end of the bar
+                        anchor: 'end',  // Anchor labels at the top
+                        formatter: (value) => `P${value.toFixed(2)}`,  // Format the label to show revenue in dollars
+                    },
+                }]
+            },
+            options: {
+                responsive: true,  // Make the chart responsive
+                plugins: {
+                    datalabels: {
+                        color: 'black',  // Color of the label
+                        font: {
+                            weight: 'bold',  // Bold font for the label
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        type: 'time',  // Time-based X-axis
+                        time: {
+                            unit: 'day',  // Display by day
+                        },
+                    },
+                    y: {
+                        min: 0,  // Minimum Y-axis value
+                        ticks: {
+                            stepSize: 100,  // Adjust as needed for your data
+                        },
+                    },
+                },
+            },
+        });
+    } catch (error) {
+        console.error("Error parsing daily sales data:", error);
+    }
+</script>
+
+<!-- Users -->
+<script>
+    // Parse the user count data from Django
+    const userCountData = JSON.parse('{{ user_count_json|escapejs }}');
+
+    // Extract labels and counts for the chart
+    const userLabels = userCountData.map(item => item.user_type);  // 'Staff', 'Non-Staff'
+    const userCounts = userCountData.map(item => item.count);  // Corresponding counts
+
+    // Create a bar chart to display staff and non-staff user counts
+    const userChart = new Chart(document.getElementById("user-chart"), {
+        type: 'bar',  // Bar chart
+        data: {
+            labels: ['Users'],  // This is the X-axis label (you can use a single label for grouped bars)
+            datasets: [
+                {
+                    label: 'Staff and Admin',  // Label for the first dataset
+                    data: [userCounts[0]],  // Data for staff and admin
+                    backgroundColor: 'rgba(16, 70, 58, 0.5)',  // Color for staff and admin
+                    borderColor: 'rgb(0, 128, 128)',  // Border color
+                    borderWidth: 1,
+                },
+                {
+                    label: 'Customers',  // Label for the second dataset
+                    data: [userCounts[1]],  // Data for customers
+                    backgroundColor: 'rgba(37, 124, 163, 0.5)',  // Color for customers
+                    borderColor: 'rgb(0, 107, 206)',  // Border color
+                    borderWidth: 1,
+                }
+            ],
+        },
+        options: {
+            responsive: true,  // Make the chart responsive
+            scales: {
+                y: {
+                    min: 0,  // Start the Y-axis at 0
+                    ticks: {
+                        stepSize: 1,  // Step size for the Y-axis
+                    },
+                },
+            },
+        },
+    });
+</script>
+
+<!-- Carts -->
+<script>
+    // Parse the JSON data from Django
+    const cartData = JSON.parse('{{ cart_data_json|escapejs }}');
+
+    // Extract labels and counts for the chart
+    const cartLabels = cartData.map(item => item.status);  // 'Active Carts', 'Inactive Carts'
+    const cartCounts = cartData.map(item => item.count);  // Corresponding counts
+
+    // Create a bar chart to visualize cart activity
+    const cartChart = new Chart(document.getElementById("cart-chart"), {
+        type: 'bar',  // Set chart type to 'bar'
+        data: {
+            labels: ['Carts'],  // Labels for the chart
+            datasets: [{
+                label: 'Active',  // Label for the first dataset
+                data: [cartCounts[0]],  // Data for staff and admin
+                backgroundColor: 'rgba(73, 36, 62, 0.5)',  // Color for staff and admin
+                borderColor: 'rgb(112, 66, 100)',  // Border color
+                borderWidth: 1,
+            },
+            {
+                label: 'Inactive',  // Label for the first dataset
+                data: [cartCounts[1]],  // Data for staff and admin
+                backgroundColor: 'rgba(221, 87, 70, 0.5)',  // Color for customers
+                borderColor: 'rgb(139, 50, 44)',  // Border color
+                borderWidth: 1,
+            }
+            ],
+        },
+        options: {
+            responsive: true,  // Make the chart responsive
+            scales: {
+                y: {
+                    min: 0,  // Start Y-axis at 0
+                    ticks: {
+                        stepSize: 1,  // Step size for Y-axis ticks
+                    },
+                },
+            },
+        },
+    });
+</script>
+
+{% endblock %}

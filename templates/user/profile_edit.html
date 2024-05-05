@@ -1,0 +1,27 @@
+{% extends '../components/master.html' %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container-fluid pb-5 mt-5">
+    <div class="container">
+        <div class="text-center border-5 border-bottom">
+            <h2>Edit Profile Details</h2>
+        </div>
+        <div class="container py-3 d-flex justify-content-center">
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{ user_form|crispy }}
+                {{ profile_form|crispy }}
+                <p class="fst-italic">*Profile photo preferably square dimension. (E.g. 500x500)</p>
+
+                <button class="btn btn-success mt-2" type="submit">Update</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

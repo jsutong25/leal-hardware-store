@@ -1,0 +1,125 @@
+{% extends '../components/master.html' %}
+{% load custom_tags %}
+
+{% block title %}
+Cart
+{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid pb-5 mt-3">
+    {% include '../components/category_list.html' %}
+    {% if messages %}
+    
+    <ul class="messages list-unstyled mt-3">
+        {% for message in messages %}
+        {% if message.tags == 'success' %}
+        <li class="alert alert-success">{{ message }}</li>
+        {% elif message.tags == 'error' %}
+        <li class="alert alert-danger">{{ message }}</li>
+        {% endif %}
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    <div class="container">
+        <hr>
+        <h1>Your Cart</h1>
+        <span>You have <span class="text-success fw-bold">{{ product_count }}</span> product(s) in your cart.</span>
+    </div>
+
+    <div class="container mt-3">
+        <table class="table table-striped table-responsive" style="width: 100%;">
+            <thead>
+                <tr>
+                    <th scope="col" colspan="2">Product</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Remove</th>
+                    <th scope="col">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td class=""><a class="d-none d-md-block" href="{% url 'category_product_detail' item.item.product.id %}"><img class="img-thumbnail"
+                                src="/media/{{ item.item.product.image }}" alt="{{ item.item.product.name }}"
+                                width="100" height="100"></a></td>
+                    <td>
+                        <h6><a href="{% url 'category_product_detail' item.item.product.id %}">{{ item.item.product.name}}</a></h6>
+                    </td>
+                    <td class="price" data-title="Price">
+                        <span>P</span><span class="subtotal">{{ item.item.product.price|to_float }}</span>
+                    </td>
+                    <td>
+                        <input class="w-50 quantity-input" min="1" type="number" value="{{ item.item.quantity }}"
+                            data-item-id="{{ item.item.id }}">
+                    </td>
+                    <td><a class="btn btn-danger" href="{% url 'remove_from_cart' item.item.id %}">Remove</a></td>
+                    <td>
+                        <span>P</span><span class="subtotal-amount">{{ item.subtotal|to_float }}</span>
+                    </td>
+                    {% empty %}
+                    <p>Your cart is empty.</p>
+                </tr>
+                {% endfor %}
+
+            </tbody>
+        </table>
+        <hr><hr>
+        <div class="total fw-bold fs-4 text-end">Total: P<span id="total">{{ total|to_float }}</span></div>
+        <div class="text-end">
+            {% if product_count > 0 %}
+            <a class="btn btn-success" href="{% url 'checkout_page' cart_id %}">Proceed to checkout</a>
+            {% else %}
+            <a class="btn btn-success disabled" href="{% url 'checkout_page' cart_id %}">Checkout</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.quantity-input').forEach(input => {
+        input.addEventListener('change', function () {
+            const itemId = this.getAttribute('data-item-id');
+            const newQuantity = this.value;
+
+            fetch(`/update-cart-item/${itemId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken'),
+                },
+                body: JSON.stringify({
+                    'quantity': newQuantity,
+                }),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update the subtotal for the current row
+                        const subtotalElement = this.closest('tr').querySelector('.subtotal-amount');
+                        subtotalElement.textContent = data.subtotal;  // This should update the correct subtotal field
+
+                        // Update the total
+                        document.getElementById('total').textContent = data.total;
+                    } else {
+                        alert('Error updating cart item');
+                    }
+                });
+        });
+    });
+
+
+    // Utility function to get CSRF token
+    function getCookie(name) {
+        const cookies = document.cookie.split(';');
+        for (const cookie of cookies) {
+            const [key, value] = cookie.trim().split('=');
+            if (key === name) return decodeURIComponent(value);
+        }
+        return null;
+    }
+</script>
+
+{% endblock %}

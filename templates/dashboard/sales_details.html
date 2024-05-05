@@ -1,0 +1,43 @@
+{% extends '../components/master.html' %}
+{% load custom_tags %}
+
+{% block title %}
+Sales
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid pb-5 mb-3">
+    <a class="mt-4 pt-2 ms-4 text-decoration-none" href="/sales">< Back</a>
+
+    <div class="container">
+        <h1 class="my-3">Sale ID: {{ sales.ordercustomer_id }}</h1>
+        <h4 class="lead">Customer: <span class="fw-bold">{{ sales.user }}</span></h4>
+        <h4 class="lead">Total: <span class="fw-bold">P{{ sales.total }}</span></h4>
+        <h4 class="lead">Date Ordered: <span class="fw-bold">{{ sales.date }}</span></h4>
+        <div class="border border-secondary p-2 pt-2">
+            <table id="example" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Items</th>
+                        <th>Unit Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in details %}
+                    <tr>
+                        <td>{{ d.product }}</td>
+                        <td>{{ d.price }}</td>
+                        <td>{{ d.quantity }}</td>
+                        <td>
+                            {% multiply d.product.price d.quantity %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
